@@ -203,9 +203,7 @@
         "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
         "networkInterfaceName": "[toLower(parameters('virtualMachineName'))]",
         "publicIpAddressName": "[concat(toLower(parameters('virtualMachineName')),'-ip')]",
-        "nsgName": "[concat(parameters('virtualMachineName'),'-nsg')]",
-        "tenantName": "[concat('MS-',parameters('stampName'))]",
-        "setupArgs": "[concat(parameters('testType'), ' ', parameters('storageKey'), ' ', variables('tenantName'))]"
+        "nsgName": "[concat(parameters('virtualMachineName'),'-nsg')]"
     },
     "resources": [
         {
