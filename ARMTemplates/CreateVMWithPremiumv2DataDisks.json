@@ -38,7 +38,7 @@
                 "WindowsServerWithContainers2019",
                 "UBUNTU1604",
                 "Sles1203",
-                "SLES1503"
+                "sles-sap-15-sp3-byos-gen2"
                 "FreeBSD",
                 "CentOS",
                 "CoreOS",
@@ -153,10 +153,10 @@
                 "SkuValue": "12-SP3"
             },
             ,
-            "SLES1503": {
+            "sles-sap-15-sp3-byos-gen2": {
                 "PublisherValue": "SUSE",
-                "OfferValue": "SLES",
-                "SkuValue": "15-SP3"
+                "OfferValue": "sles-sap-15-sp3-byos-gen2",
+                "SkuValue": "gen2"
             },
             "CentOS": {
                 "PublisherValue": "OpenLogic",
