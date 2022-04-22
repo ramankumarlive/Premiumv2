@@ -213,7 +213,7 @@
     {
       "type": "Microsoft.Compute/disks",
       "apiVersion": "2021-12-01",
-      "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex())]",
+      "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('diskcreation'))]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "PremiumV2_LRS"
@@ -372,7 +372,7 @@
               "count": "[length(variables('dataDisksArray'))]",
               "input": {
                 "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks'))]",
-                "lun": "[variables('dataDisksArray')[copyIndex()].lun]",
+                "lun": "[variables('dataDisksArray')[copyIndex('dataDisks')].lun]",
                 "createOption": "attach",
                 "managedDisk": {
                   "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks')))]"
