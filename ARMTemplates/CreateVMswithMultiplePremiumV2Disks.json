@@ -89,21 +89,21 @@
         {
           "name": "vhd1",
           "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
+          "diskIOPSReadWrite": 3000,
           "diskMBpsReadWrite": 1000,
           "lun": 0
         },
         {
           "name": "vhd2",
           "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
+          "diskIOPSReadWrite": 3000,
           "diskMBpsReadWrite": 1000,
           "lun": 1
         },
         {
           "name": "vhd3",
           "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
+          "diskIOPSReadWrite": 3000,
           "diskMBpsReadWrite": 1000,
           "lun": 2
         }
