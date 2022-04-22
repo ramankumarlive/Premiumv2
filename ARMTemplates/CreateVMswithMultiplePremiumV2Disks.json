@@ -226,9 +226,9 @@
           "createOption": "Empty",
           "logicalSectorSize": "[parameters('logicalSectorSize')]"
         },
-        "diskSizeGB": "[variables('dataDisksArray')[copyIndex()].dataDiskSizeInGB]",
-        "diskIOPSReadWrite": "[variables('dataDisksArray')[copyIndex()].diskIOPSReadWrite]",
-        "diskMBpsReadWrite": "[variables('dataDisksArray')[copyIndex()].diskMBpsReadWrite]"
+        "diskSizeGB": "[variables('dataDisksArray')[copyIndex('diskcreation')].dataDiskSizeInGB]",
+        "diskIOPSReadWrite": "[variables('dataDisksArray')[copyIndex('diskcreation')].diskIOPSReadWrite]",
+        "diskMBpsReadWrite": "[variables('dataDisksArray')[copyIndex('diskcreation')].diskMBpsReadWrite]"
       },
       "copy": {
         "name": "diskcreation",
@@ -371,11 +371,11 @@
               "name": "dataDisks",
               "count": "[length(variables('dataDisksArray'))]",
               "input": {
-                "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex())]",
+                "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks'))]",
                 "lun": "[variables('dataDisksArray')[copyIndex()].lun]",
                 "createOption": "attach",
                 "managedDisk": {
-                  "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-dataDisk',copyIndex()))]"
+                  "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks')))]"
                 }
               }
             }
