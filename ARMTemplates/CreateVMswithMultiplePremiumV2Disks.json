@@ -82,6 +82,32 @@
       "metadata": {
         "description": "Availability Zone of the VM and the attached disks"
       }
+    },
+    "dataDisksArray": {
+      "type": "array",
+      "defaultValue": [
+        {
+          "name": "vhd1",
+          "dataDiskSizeInGB": 32,
+          "diskIOPSReadWrite": 1000,
+          "diskMBpsReadWrite": 1000,
+          "lun": 0
+        },
+        {
+          "name": "vhd2",
+          "dataDiskSizeInGB": 32,
+          "diskIOPSReadWrite": 1000,
+          "diskMBpsReadWrite": 1000,
+          "lun": 1
+        },
+        {
+          "name": "vhd3",
+          "dataDiskSizeInGB": 32,
+          "diskIOPSReadWrite": 1000,
+          "diskMBpsReadWrite": 1000,
+          "lun": 2
+        }
+      ]
     }
   },
   "variables": {
@@ -181,33 +207,7 @@
     "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
     "networkInterfaceName": "[toLower(parameters('virtualMachineName'))]",
     "publicIpAddressName": "[concat(toLower(parameters('virtualMachineName')),'-ip')]",
-    "nsgName": "[concat(parameters('virtualMachineName'),'-nsg')]",
-    "dataDisksArray": {
-      "type": "array",
-      "defaultValue": [
-        {
-          "name": "vhd1",
-          "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
-          "diskMBpsReadWrite": 1000,
-          "lun": 0
-        },
-        {
-          "name": "vhd2",
-          "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
-          "diskMBpsReadWrite": 1000,
-          "lun": 1
-        },
-        {
-          "name": "vhd3",
-          "dataDiskSizeInGB": 32,
-          "diskIOPSReadWrite": 1000,
-          "diskMBpsReadWrite": 1000,
-          "lun": 2
-        }
-      ]
-    }
+    "nsgName": "[concat(parameters('virtualMachineName'),'-nsg')]"
   },
   "resources": [
     {
@@ -226,13 +226,13 @@
           "createOption": "Empty",
           "logicalSectorSize": "[parameters('logicalSectorSize')]"
         },
-        "diskSizeGB": "[variables('dataDisksArray')[copyIndex('diskcreation')].dataDiskSizeInGB]",
-        "diskIOPSReadWrite": "[variables('dataDisksArray')[copyIndex('diskcreation')].diskIOPSReadWrite]",
-        "diskMBpsReadWrite": "[variables('dataDisksArray')[copyIndex('diskcreation')].diskMBpsReadWrite]"
+        "diskSizeGB": "[parameters('dataDisksArray')[copyIndex('diskcreation')].dataDiskSizeInGB]",
+        "diskIOPSReadWrite": "[parameters('dataDisksArray')[copyIndex('diskcreation')].diskIOPSReadWrite]",
+        "diskMBpsReadWrite": "[parameters('dataDisksArray')[copyIndex('diskcreation')].diskMBpsReadWrite]"
       },
       "copy": {
         "name": "diskcreation",
-        "count": "[length(variables('dataDisksArray'))]"
+        "count": "[length(parameters('dataDisksArray'))]"
       }
     },
     {
@@ -369,10 +369,10 @@
           "copy": [
             {
               "name": "dataDisks",
-              "count": "[length(variables('dataDisksArray'))]",
+              "count": "[length(parameters('dataDisksArray'))]",
               "input": {
                 "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks'))]",
-                "lun": "[variables('dataDisksArray')[copyIndex('dataDisks')].lun]",
+                "lun": "[parameters('dataDisksArray')[copyIndex('dataDisks')].lun]",
                 "createOption": "attach",
                 "managedDisk": {
                   "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-dataDisk',copyIndex('dataDisks')))]"
