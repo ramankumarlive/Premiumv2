@@ -403,7 +403,7 @@
                 "lun": "[variables('dataDisksArray')[copyIndex()].lun]",
                 "createOption": "attach",
                 "managedDisk": {
-                  "id": "[resourceId('Microsoft.Compute/disks',variables('dataDisksArray')[copyIndex()].name)]"
+                  "id": "[resourceId('Microsoft.Compute/disks/', concat(parameters('virtualMachineName'),'-dataDisk',copyIndex()))]"
                 }
               }
             }
