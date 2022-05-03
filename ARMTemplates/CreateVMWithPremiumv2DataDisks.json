@@ -144,7 +144,7 @@
                 "SkuValue": "16.04-LTS"
             },
             "UBUNTU1804": {
-                "publisher": "Canonical",
+                "PublisherValue": "Canonical",
                 "offer": "UbuntuServer",
                 "SkuValue": "18.04-LTS"
             },
