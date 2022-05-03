@@ -68,12 +68,11 @@
                 "creationData": {
                     "createOption": "Empty",
                     "logicalSectorSize": "[parameters('logicalSectorSize')]"
-                },
-                "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
-                "diskIOPSReadWrite": "[parameters('diskIOPSReadWrite')]",
-                "diskMBpsReadWrite": "[parameters('diskMBpsReadWrite')]"
-            }
-      }
+             },
+            "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
+            "diskIOPSReadWrite": "[parameters('diskIOPSReadWrite')]",
+            "diskMBpsReadWrite": "[parameters('diskMBpsReadWrite')]"
+        }
       }
     ]
   }
