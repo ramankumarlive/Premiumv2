@@ -145,7 +145,7 @@
             },
             "UBUNTU1804": {
                 "PublisherValue": "Canonical",
-                "offer": "UbuntuServer",
+                "OfferValue": "UbuntuServer",
                 "SkuValue": "18.04-LTS"
             },
             "Oracle": {
