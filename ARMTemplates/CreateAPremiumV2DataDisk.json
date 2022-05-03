@@ -46,7 +46,7 @@
               "description": "Availability Zone of the VM and the disk"
             }
         },
-        "region":{  
+        "location":{  
          "type":"string",
          "defaultValue":"USEast2EUAP"
           }
