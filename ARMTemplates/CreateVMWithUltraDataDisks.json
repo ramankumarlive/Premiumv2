@@ -349,6 +349,9 @@
                 "hardwareProfile": {
                     "vmSize": "[parameters('virtualMachineSize')]"
                 },
+                "additionalCapabilities": {
+                    "ultraSSDEnabled": "true"
+                },
                 "osProfile": {
                     "computername": "[parameters('virtualMachineName')]",
                     "adminUsername": "[parameters('adminUsername')]",
