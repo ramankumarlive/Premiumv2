@@ -106,17 +106,10 @@
             }
         },
         "useAcceleratedNetworking": {
-            "defaultValue": "[bool('true')]",
+            "defaultValue": "[bool('false')]",
             "type": "Bool",
             "metadata": {
                 "description": "Enable Accelerated Networking on the VM."
-            }
-        },
-        "zone": {
-            "type": "Int",
-            "defaultValue": 2,
-            "metadata": {
-              "description": "Availability Zone of the VM and the attached disks"
             }
         }
     },
