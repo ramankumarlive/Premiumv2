@@ -29,6 +29,13 @@
                 "description": "The virtual machine size. Enter a VM from the list supported at Preview."
             }
         },
+        "stampName": {
+            "type": "String",
+            "defaultValue": "CBN14PrdSDF01A",
+            "metadata": {
+                "description": "The name of the stamp."
+            }
+        },
         "operatingSystem": {
             "defaultValue": "WindowsServer2016",
             "allowedValues": [
@@ -92,7 +99,7 @@
             }
         },
         "logicalSectorSize": {
-            "defaultValue": 512, 
+            "defaultValue": 4096, 
             "type": "Int",
             "metadata": {
                 "descriptions": "Logical sector size in bytes for Ultra disks."
@@ -223,15 +230,13 @@
             "apiVersion": "2021-12-01",
             "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex())]",
             "location": "[parameters('location')]",
-            "zones":[
-                  "[parameters('zone')]"
-              ],
             "sku": {
-                "name": "PremiumV2_LRS"
+                "name": "UltraSSD_LRS"
             },
             "properties": {
                 "creationData": {
                     "createOption": "Empty",
+                     "StorageStampName": "[parameters('stampName')]",
                     "logicalSectorSize": "[parameters('logicalSectorSize')]"
                 },
                 "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
