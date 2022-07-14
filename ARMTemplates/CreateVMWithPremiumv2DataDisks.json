@@ -220,7 +220,7 @@
     "resources": [
         {
             "type": "Microsoft.Compute/disks",
-            "apiVersion": "2021-12-01",
+            "apiVersion": "2021-03-02",
             "name": "[concat(parameters('virtualMachineName'),'-dataDisk',copyIndex())]",
             "location": "[parameters('location')]",
             "zones":[
@@ -340,7 +340,7 @@
           },
         {
             "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2021-11-01",
+            "apiVersion": "2022-03-01",
             "name": "[parameters('virtualMachineName')]",
             "location": "[parameters('location')]", 
             "zones": [
