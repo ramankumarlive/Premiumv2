@@ -67,6 +67,7 @@
             "properties": {
                 "creationData": {
                     "createOption": "Empty",
+                     "StorageStampName": "[parameters('stampName')]",
                     "logicalSectorSize": "[parameters('logicalSectorSize')]"
              },
             "diskSizeGB": "[parameters('dataDiskSizeInGB')]",
