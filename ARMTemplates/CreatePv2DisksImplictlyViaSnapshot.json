@@ -224,17 +224,17 @@
 			"diskEncryptionSet": null
 		}],
 		"networkInterfaceConfigurations": [{
-			"name": "skvmsstest1vnet242-nic01",
+			"name": "[concat(parameters('virtualMachineScaleSetName'),'-nic01')]",
 			"primary": true,
-			"subnetId": "[concat('/subscriptions/dd80b94e-0463-4a65-8d04-c94f403879dc/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Network/virtualNetworks/',variables('virtualNetworkName'),'/subnets/',variables('subnetName'))]",
+			"subnetId": "[resourceId(concat('Microsoft.Network/virtualNetworks/',variables('virtualNetworkName'),'/subnets/'),variables('subnetName'))]",
 			"applicationGatewayBackendAddressPools": [],
 			"loadBalancerBackendAddressPools": [],
 			"applicationSecurityGroups": [],
 			"loadBalancerInboundNatPools": [],
 			"enableAcceleratedNetworking": false,
 			"nsgName": "[variables('nsgName')]",
-			"nsgId": "[concat('/subscriptions/dd80b94e-0463-4a65-8d04-c94f403879dc/resourceGroups/',parameters('resourceGroupName'),'/providers/Microsoft.Network/networkSecurityGroups/',variables('nsgName'))]",
-			"pipName": "publicIp-skvmsstest1vnet242-nic01"
+			"nsgId": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]",
+			"pipName": "[concat(parameters('virtualMachineScaleSetName'),'-nic01-pip01')]"
 		}],
 		"namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]",
 		"DiskVfySetupScript": "https://accountmigration.blob.core.windows.net/resources/Setup.ps1?sp=r&st=2023-03-29T06:18:14Z&se=2030-12-31T14:18:14Z&spr=https&sv=2021-12-02&sr=b&sig=Rdyv4H9d64fjaL1rzEVMi0O5MHTKr%2FHctJWVuHD0Gj8%3D"
