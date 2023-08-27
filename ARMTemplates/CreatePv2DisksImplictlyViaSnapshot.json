@@ -223,7 +223,7 @@
 		"networkInterfaceConfigurations": [{
 			"name": "[concat(parameters('virtualMachineScaleSetName'),'-nic01')]",
 			"primary": true,
-			"subnetId": "[resourceId(concat('Microsoft.Network/virtualNetworks/',variables('virtualNetworkName'),'/subnets/'),variables('subnetName'))]",
+			"subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
 			"applicationGatewayBackendAddressPools": [],
 			"loadBalancerBackendAddressPools": [],
 			"applicationSecurityGroups": [],
