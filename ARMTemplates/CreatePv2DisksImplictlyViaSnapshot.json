@@ -44,13 +44,13 @@
         },
         "diskIOPSReadWrite": {
             "type": "int",
-            "defaultValue": 100,
+            "defaultValue": 3500,
             "minValue": 100,
             "maxValue": 160000
         },
         "diskMBpsReadWrite": {
             "type": "int",
-            "defaultValue": 1,
+            "defaultValue": 150,
             "minValue": 1,
             "maxValue": 4000
         },
