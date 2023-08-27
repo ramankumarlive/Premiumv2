@@ -12,7 +12,7 @@
         "dataDisksCount": {
             "type": "int"
         },
-        "sourceSnapshotForDataDisks": {
+        "sourceSnapshotARMId": {
             "type": "string"
             "defaultValue": "/subscriptions/dd80b94e-0463-4a65-8d04-c94f403879dc/resourceGroups/Premiumv2Testing/providers/Microsoft.Compute/snapshots/mySourceDisk_snapshot"
         },
@@ -498,16 +498,17 @@
                                 "count": "[parameters('dataDisksCount')]",
                                 "input": {
                                     "lun": "[copyIndex('dataDisks')]",
-                                    "createOption": "[variables('dataDisks')[0].createOption]",
-                                    "caching": "[variables('dataDisks')[0].caching]",
-                                    "writeAcceleratorEnabled": "[variables('dataDisks')[0].writeAcceleratorEnabled]",
-                                    "diskSizeGB": "[variables('dataDisks')[0].diskSizeGB]",
+                                    "createOption": "Copy",
+                                    "sourceResourceId": "[parameters('sourceSnapshotARMId')]"
+                                    "caching": "None",
+                                    "writeAcceleratorEnabled": "false",
+                                    "diskSizeGB": "[parameters('diskSizeInGB')]",
                                     "managedDisk": {
-                                        "storageAccountType": "[variables('dataDisks')[0].storageAccountType]",
-                                        "diskEncryptionSet": "[variables('dataDisks')[0].diskEncryptionSet]"
+                                        "storageAccountType": "[parameters('storageAccountType')]",
+                                        "diskEncryptionSet": "null"
                                     },
-                                    "diskIOPSReadWrite": "[if(equals( variables('dataDisks')[0].diskIOPSReadWrite, -1), json('null'),variables('dataDisks')[0].diskIOPSReadWrite)]",
-                                    "diskMBpsReadWrite": "[if(equals( variables('dataDisks')[0].diskMBpsReadWrite, -1), json('null'),variables('dataDisks')[0].diskMBpsReadWrite)]"
+                                    "diskIOPSReadWrite": "[parameters('diskIOPSReadWrite')]",
+                                    "diskMBpsReadWrite": "[parameters('diskMBpsReadWrite')]"
                                 }
                             }
                         ]
