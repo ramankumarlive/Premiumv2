@@ -1,0 +1,574 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"location": {
+			"type": "string",
+			"defaultValue": "canadacentral"
+		},
+		"dataDisksCount": {
+			"type": "int"
+		},
+		"sourceSnapshotARMId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/dd80b94e-0463-4a65-8d04-c94f403879dc/resourceGroups/Premiumv2Testing/providers/Microsoft.Compute/snapshots/mySourceDisk_snapshot"
+		},
+		"virtualMachineScaleSetName": {
+			"type": "string"
+		},
+		"instanceCount": {
+			"type": "string"
+		},
+		"instanceSize": {
+			"type": "string",
+			"defaultValue": "Standard_E4s_v3"
+		},
+		"adminUsername": {
+			"type": "string",
+			"defaultValue": "xscn"
+		},
+		"adminPassword": {
+			"type": "secureString",
+			"defaultValue": "TestUser101!"
+		},
+		"patchMode": {
+			"type": "string",
+			"defaultValue": "AutomaticByOS"
+		},
+		"diskSizeInGB": {
+			"defaultValue": 4,
+			"type": "int"
+		},
+		"diskIOPSReadWrite": {
+			"type": "int",
+			"defaultValue": 3500,
+			"minValue": 100,
+			"maxValue": 160000
+		},
+		"diskMBpsReadWrite": {
+			"type": "int",
+			"defaultValue": 150,
+			"minValue": 1,
+			"maxValue": 4000
+		},
+		"operatingSystem": {
+			"defaultValue": "WindowsServer2016",
+			"allowedValues": [
+				"WindowsServer2016",
+				"WindowsServerWithContainers2016",
+				"WindowsServer2019",
+				"WindowsServerWithContainers2019",
+				"UBUNTU1604",
+				"Sles1203",
+				"FreeBSD",
+				"CentOS",
+				"CoreOS",
+				"RHEL",
+				"RHEL73",
+				"Debian",
+				"OpenSUSE",
+				"Oracle",
+				"TestWindowsServer2012Stage",
+				"TestWindowsServer2016Stage"
+			],
+			"type": "String",
+			"metadata": {
+				"description": "The operating system for the VM."
+			}
+		},
+		"enableHotpatching": {
+			"type": "bool",
+			"defaultValue": false
+		},
+		"platformFaultDomainCount": {
+			"type": "string",
+			"defaultValue": "3"
+		},
+		"zone": {
+			"type": "string",
+			"allowedValues": [
+				"0",
+				"1",
+				"2",
+				"3"
+			],
+			"defaultValue": "3"
+		},
+		"orchestrationMode": {
+			"type": "string",
+			"defaultValue": "Flexible"
+		},
+		"storageAccountType": {
+			"type": "string",
+			"defaultValue": "UltraSSD_LRS"
+		},
+		"upgradePolicy": {
+			"type": "string",
+			"defaultValue": "Automatic"
+		},
+		"IsHBEEnabled": {
+			"type": "string",
+			"defaultValue": "False",
+			"metadata": {
+				"description": "Enable Host Based Encryption on the VM."
+			}
+		}
+	},
+	"variables": {
+		"empty": [],
+		"zoneArray": ["[parameters('zone')]"],
+		"storageApiVersion": "2021-01-01",
+		"networkApiVersion": "2020-11-01",
+		"virtualMachineScaleSetApiVersion": "2022-03-01",
+		"addressPrefix": "10.2.3.0/24",
+		"subnetPrefix": "10.2.3.0/24",
+		"nsgName": "[concat(parameters('virtualMachineScaleSetName'),'-nsg')]",
+		"subnetName": "[concat(toLower(parameters('virtualMachineScaleSetName')),'-subnet')]",
+		"virtualNetworkName": "[concat(parameters('virtualMachineScaleSetName'),'-vnet')]",
+		"operatingSystemValues": {
+			"WindowsServer2016": {
+				"PublisherValue": "MicrosoftWindowsServer",
+				"OfferValue": "WindowsServer",
+				"SkuValue": "2016-Datacenter-GS"
+			},
+			"WindowsServerWithContainers2016": {
+				"PublisherValue": "MicrosoftWindowsServer",
+				"OfferValue": "WindowsServer",
+				"SkuValue": "2016-Datacenter-With-Containers-GS"
+			},
+			"WindowsServer2019": {
+				"PublisherValue": "MicrosoftWindowsServer",
+				"OfferValue": "WindowsServer",
+				"SkuValue": "2019-Datacenter-GS"
+			},
+			"WindowsServerWithContainers2019": {
+				"PublisherValue": "MicrosoftWindowsServer",
+				"OfferValue": "WindowsServer",
+				"SkuValue": "2019-Datacenter-With-Containers-GS"
+			},
+			"UBUNTU1604": {
+				"PublisherValue": "Canonical",
+				"OfferValue": "UbuntuServer",
+				"SkuValue": "16.04-LTS"
+			},
+			"Oracle": {
+				"PublisherValue": "Oracle",
+				"OfferValue": "Oracle-Database-Ee",
+				"SkuValue": "12.1.0.2"
+			},
+			"SLES1203": {
+				"PublisherValue": "SUSE",
+				"OfferValue": "SLES",
+				"SkuValue": "12-SP3"
+			},
+			"CentOS": {
+				"PublisherValue": "OpenLogic",
+				"OfferValue": "CentOS",
+				"SkuValue": "7.1"
+			},
+			"RHEL73": {
+				"PublisherValue": "RedHat",
+				"OfferValue": "RHEL",
+				"SkuValue": "7.3"
+			},
+			"RHEL": {
+				"PublisherValue": "RedHat",
+				"OfferValue": "RHEL",
+				"SkuValue": "7-RAW"
+			},
+			"CoreOS": {
+				"PublisherValue": "OpenLogic",
+				"OfferValue": "CentOS",
+				"SkuValue": "7.3"
+			},
+			"Debian": {
+				"PublisherValue": "credativ",
+				"OfferValue": "Debian",
+				"SkuValue": "8"
+			},
+			"openSUSE": {
+				"PublisherValue": "SUSE",
+				"OfferValue": "openSUSE-Leap",
+				"SkuValue": "42.3"
+			},
+			"TestWindowsServer2012Stage": {
+				"PublisherValue": "AzureRT.PIRCore.TestWAStage",
+				"OfferValue": "TestWindowsServer2012",
+				"SkuValue": "R2"
+			},
+			"TestWindowsServer2016Stage": {
+				"PublisherValue": "Test",
+				"OfferValue": "WindowsServer2016testoffer",
+				"SkuValue": "windowsserver2016testsku"
+			},
+			"FreeBSD": {
+				"PublisherValue": "MicrosoftOSTC",
+				"OfferValue": "FreeBSD",
+				"SkuValue": "11.1"
+			}
+		},
+		"dataDisks": [{
+			"lun": 0,
+			"createOption": "empty",
+			"caching": "None",
+			"writeAcceleratorEnabled": false,
+			"id": null,
+			"name": "[concat('skvmsstest2_DataDisk_')]",
+			"storageAccountType": "UltraSSD_LRS",
+			"diskSizeGB": "[parameters('diskSizeInGB')]",
+			"diskIOPSReadWrite": -1,
+			"diskMBpsReadWrite": -1,
+			"diskEncryptionSet": null
+		}],
+		"networkInterfaceConfigurations": [{
+			"name": "[concat(parameters('virtualMachineScaleSetName'),'-nic01')]",
+			"primary": true,
+			"subnetId": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('virtualNetworkName'), variables('subnetName'))]",
+			"applicationGatewayBackendAddressPools": [],
+			"loadBalancerBackendAddressPools": [],
+			"applicationSecurityGroups": [],
+			"loadBalancerInboundNatPools": [],
+			"enableAcceleratedNetworking": false,
+			"nsgName": "[variables('nsgName')]",
+			"nsgId": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]",
+			"pipName": "[concat(parameters('virtualMachineScaleSetName'),'-nic01-pip01')]"
+		}],
+		"namingInfix": "[toLower(substring(concat(parameters('virtualMachineScaleSetName'), uniqueString(resourceGroup().id)), 0, 9))]",
+		"DiskVfySetupScript": "https://accountmigration.blob.core.windows.net/resources/Setup.ps1?sp=r&st=2023-03-29T06:18:14Z&se=2030-12-31T14:18:14Z&spr=https&sv=2021-12-02&sr=b&sig=Rdyv4H9d64fjaL1rzEVMi0O5MHTKr%2FHctJWVuHD0Gj8%3D"
+	},
+	"resources": [{
+			"name": "[variables('virtualNetworkName')]",
+			"type": "Microsoft.Network/virtualNetworks",
+			"apiVersion": "2021-01-01",
+			"dependsOn": [
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+			],
+			"location": "[parameters('location')]",
+			"properties": {
+				"addressSpace": {
+					"addressPrefixes": [
+						"[variables('addressPrefix')]"
+					]
+				},
+				"subnets": [{
+					"name": "[variables('subnetName')]",
+					"properties": {
+						"addressPrefix": "[variables('subnetPrefix')]"
+					}
+				}]
+			}
+		},
+		{
+			"type": "Microsoft.Network/networkSecurityGroups",
+			"apiVersion": "2021-08-01",
+			"name": "[variables('nsgName')]",
+			"location": "[parameters('location')]",
+			"tags": {
+				"NRMS-Info": "http://aka.ms/nrms",
+				"NRMS-Version": "2019-03-20"
+			},
+			"properties": {
+				"securityRules": [{
+						"name": "NRMS-Rule-105",
+						"properties": {
+							"description": "DO NOT DELETE - Will result in ICM Sev 2 - Azure Core Security, see aka.ms/cainsgpolicy",
+							"protocol": "*",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "Internet",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 105,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"1433",
+								"1434",
+								"3306",
+								"4333",
+								"5432",
+								"6379",
+								"7000",
+								"7001",
+								"7199",
+								"9042",
+								"9160",
+								"9200",
+								"9300",
+								"16379",
+								"26379",
+								"27017"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "NRMS-Rule-106",
+						"properties": {
+							"description": "DO NOT DELETE - Will result in ICM Sev 2 - Azure Core Security, see aka.ms/cainsgpolicy",
+							"protocol": "Tcp",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "Internet",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 106,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"22",
+								"3389"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "NRMS-Rule-107",
+						"properties": {
+							"description": "DO NOT DELETE - Will result in ICM Sev 2 - Azure Core Security, see aka.ms/cainsgpolicy",
+							"protocol": "Tcp",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "Internet",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 107,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"23",
+								"135",
+								"445",
+								"5985",
+								"5986"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "NRMS-Rule-108",
+						"properties": {
+							"description": "DO NOT DELETE - Will result in ICM Sev 2 - Azure Core Security, see aka.ms/cainsgpolicy",
+							"protocol": "*",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "Internet",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 108,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"13",
+								"17",
+								"19",
+								"53",
+								"69",
+								"111",
+								"123",
+								"512",
+								"514",
+								"593",
+								"873",
+								"1900",
+								"5353",
+								"11211"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "NRMS-Rule-109",
+						"properties": {
+							"description": "DO NOT DELETE - Will result in ICM Sev 2 - Azure Core Security, see aka.ms/cainsgpolicy",
+							"protocol": "*",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "Internet",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 109,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"119",
+								"137",
+								"138",
+								"139",
+								"161",
+								"162",
+								"389",
+								"636",
+								"2049",
+								"2301",
+								"2381",
+								"3268",
+								"5800",
+								"5900"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "SAW-inbound-allow",
+						"properties": {
+							"description": "CorpNetSaw is no longer accepted. Saw traffic is allowed.",
+							"protocol": "*",
+							"sourcePortRange": "*",
+							"destinationPortRange": "*",
+							"destinationAddressPrefix": "*",
+							"access": "Allow",
+							"priority": 120,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [],
+							"sourceAddressPrefixes": [
+								"157.58.216.64/26",
+								"194.69.119.64/26",
+								"167.220.249.128/26",
+								"207.68.190.32/27",
+								"13.106.174.32/27",
+								"13.106.4.96/27"
+							],
+							"destinationAddressPrefixes": []
+						}
+					},
+					{
+						"name": "Rule-121-Corpnet",
+						"properties": {
+							"description": "Adding this rule to block CorpNet VIPs on these ports",
+							"protocol": "Tcp",
+							"sourcePortRange": "*",
+							"sourceAddressPrefix": "CorpNetPublic",
+							"destinationAddressPrefix": "*",
+							"access": "Deny",
+							"priority": 121,
+							"direction": "Inbound",
+							"sourcePortRanges": [],
+							"destinationPortRanges": [
+								"22",
+								"3389"
+							],
+							"sourceAddressPrefixes": [],
+							"destinationAddressPrefixes": []
+						}
+					}
+				]
+			}
+		},
+		{
+			"name": "[parameters('virtualMachineScaleSetName')]",
+			"type": "Microsoft.Compute/virtualMachineScaleSets",
+			"apiVersion": "[variables('virtualMachineScaleSetApiVersion')]",
+			"location": "[parameters('location')]",
+			"dependsOn": [
+				"[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]",
+				"[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
+			],
+			"properties": {
+				"virtualMachineProfile": {
+					"storageProfile": {
+						"osDisk": {
+							"createOption": "fromImage",
+							"caching": "ReadWrite",
+							"managedDisk": {
+								"storageAccountType": "Premium_LRS"
+							}
+						},
+						"imageReference": {
+							"publisher": "[variables('operatingSystemValues')[parameters('operatingSystem')].PublisherValue]",
+							"offer": "[variables('operatingSystemValues')[parameters('operatingSystem')].OfferValue]",
+							"sku": "[variables('operatingSystemValues')[parameters('operatingSystem')].SkuValue]",
+							"version": "latest"
+						},
+						"copy": [{
+							"name": "dataDisks",
+							"count": "[parameters('dataDisksCount')]",
+							"input": {
+								"lun": "[copyIndex('dataDisks')]",
+								"createOption": "Copy",
+								"sourceResourceId": "[parameters('sourceSnapshotARMId')]",
+								"caching": "None",
+								"writeAcceleratorEnabled": "false",
+								"diskSizeGB": "[parameters('diskSizeInGB')]",
+								"managedDisk": {
+									"storageAccountType": "[parameters('storageAccountType')]",
+									"diskEncryptionSet": "null"
+								},
+								"diskIOPSReadWrite": "[parameters('diskIOPSReadWrite')]",
+								"diskMBpsReadWrite": "[parameters('diskMBpsReadWrite')]"
+							}
+						}]
+					},
+					"networkProfile": {
+						"networkApiVersion": "[variables('networkApiVersion')]",
+						"copy": [{
+							"name": "networkInterfaceConfigurations",
+							"count": "[length(variables('networkInterfaceConfigurations'))]",
+							"input": {
+								"name": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name]",
+								"properties": {
+									"primary": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+									"enableAcceleratedNetworking": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].enableAcceleratedNetworking]",
+									"ipConfigurations": [{
+										"name": "[concat(take(variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].name, sub(80, length('-defaultIpConfiguration'))), '-defaultIpConfiguration')]",
+										"properties": {
+											"subnet": {
+												"id": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].subnetId]"
+											},
+											"primary": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].primary]",
+											"applicationGatewayBackendAddressPools": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].applicationGatewayBackendAddressPools]",
+											"loadBalancerBackendAddressPools": "[variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].loadBalancerBackendAddressPools]",
+											"publicIPAddressConfiguration": "[if( equals( variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, ''), json('null'), union(json(concat('{\"name\": \"', variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].pipName, '\"}')),json('{\"properties\": { \"idleTimeoutInMinutes\": 15}}')))]"
+										}
+									}],
+									"networkSecurityGroup": "[if( equals( variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, ''), json('null'),json(concat('{\"id\": \"', variables('networkInterfaceConfigurations')[copyIndex('networkInterfaceConfigurations')].nsgId, '\"}')))]"
+								}
+							}
+						}]
+					},
+					"extensionProfile": {
+						"extensions": []
+					},
+					"diagnosticsProfile": {
+						"bootDiagnostics": {
+							"enabled": true
+						}
+					},
+					"osProfile": {
+						"computerNamePrefix": "[variables('namingInfix')]",
+						"adminUsername": "[parameters('adminUsername')]",
+						"adminPassword": "[parameters('adminPassword')]",
+						"windowsConfiguration": {
+							"provisionVmAgent": true,
+							"enableAutomaticUpdates": true,
+							"patchSettings": {
+								"enableHotpatching": "[parameters('enableHotpatching')]",
+								"patchMode": "[parameters('patchMode')]"
+							}
+						}
+					},
+					"securityProfile": {
+						"encryptionAtHost": "[parameters('IsHBEEnabled')]"
+					}
+				},
+				"orchestrationMode": "[parameters('orchestrationMode')]",
+				"additionalCapabilities": {
+					"ultraSSDEnabled": true
+				},
+				"platformFaultDomainCount": "[parameters('platformFaultDomainCount')]"
+			},
+			"sku": {
+				"name": "[parameters('instanceSize')]",
+				"capacity": "[int(parameters('instanceCount'))]"
+			},
+			"zones": "[if(equals(parameters('zone'),'0'), variables('empty'), variables('zoneArray'))]"
+		}
+	],
+	"outputs": {
+		"adminUsername": {
+			"type": "string",
+			"value": "[parameters('adminUsername')]"
+		}
+	}
+}
