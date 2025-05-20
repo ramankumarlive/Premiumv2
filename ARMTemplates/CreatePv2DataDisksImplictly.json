@@ -100,7 +100,7 @@
 		},
 		"storageAccountType": {
 			"type": "string",
-			"defaultValue": "UltraSSD_LRS"
+			"defaultValue": "PremiumV2_LRS"
 		},
 		"upgradePolicy": {
 			"type": "string",
