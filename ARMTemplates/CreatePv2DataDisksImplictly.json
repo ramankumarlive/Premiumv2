@@ -486,17 +486,14 @@
 							"count": "[parameters('dataDisksCount')]",
 							"input": {
 								"lun": "[copyIndex('dataDisks')]",
-								"createOption": "Copy",
-								"sourceResourceId": "[parameters('sourceSnapshotARMId')]",
+								"createOption": "Empty",
 								"caching": "None",
 								"writeAcceleratorEnabled": "false",
 								"diskSizeGB": "[parameters('diskSizeInGB')]",
 								"managedDisk": {
 									"storageAccountType": "[parameters('storageAccountType')]",
 									"diskEncryptionSet": "null"
-								},
-								"diskIOPSReadWrite": "[parameters('diskIOPSReadWrite')]",
-								"diskMBpsReadWrite": "[parameters('diskMBpsReadWrite')]"
+								}
 							}
 						}]
 					},
